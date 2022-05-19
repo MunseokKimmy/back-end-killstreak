@@ -25,14 +25,14 @@ func GetDatabase() (*sql.DB, error) {
 	if err != nil {
 		fmt.Println("Error loading .env file")
 	}
-	fmt.Println(os.Getenv(("DSN")))
 	dsnString := os.Getenv("DSN")
-	db, err = sql.Open("mysql", dsnString)
+	db, err := sql.Open("mysql", dsnString)
 	return db, err
 }
 
 func main() {
-	db, err := GetDatabase()
+	var err error
+	db, err = GetDatabase()
 	if err != nil {
 		panic(err)
 	}
@@ -55,6 +55,7 @@ func groupsHandler(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query("SELECT * FROM groups")
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, "12", 500)
 		return
 	}
 	defer rows.Close()
@@ -65,12 +66,14 @@ func groupsHandler(w http.ResponseWriter, r *http.Request) {
 		err := rows.Scan(&group.groupid, &group.name, &group.datecreated, &group.gamelastcompleted)
 		if err != nil {
 			http.Error(w, http.StatusText(500), 500)
+			http.Error(w, err.Error(), 500)
 			return
 		}
 		groups = append(groups, group)
 	}
 	if err = rows.Err(); err != nil {
 		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, "36", 500)
 		return
 	}
 	for _, group := range groups {
