@@ -3,6 +3,23 @@ package dto
 import "time"
 
 /*
+	Either use request or query params.
+	/groups/getgroup/
+	Grabs group data.
+*/
+type GetGroupRequest struct {
+	Id int `json:"groupid"`
+}
+
+/*
+	/groups/getplayers/
+	Gets all players in a group.
+*/
+type GetPlayersInGroup struct {
+	Id int `json:"groupid"`
+}
+
+/*
 	/groups/creategroup/
 	Creates a new group and makes the player creating the group an editor user.
 */
