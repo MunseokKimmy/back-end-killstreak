@@ -43,3 +43,18 @@ func GetAllGroups(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Group ID: %d, Name: %s, Date Created: %s, Game Last Completed: %s\n", group.groupid, group.name, group.datecreated.Format("2006-01-02"), group.gamelastcompleted.Format("2006-01-02"))
 	}
 }
+
+func GetAllGroupsOfPlayer(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	// id := r.URL.Query().Get("id")
+}
+
+func AddPlayerToGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	groupid := r.URL.Query().Get("groupid")
+	playerid := r.URL.Query().Get("playerid")
+
+	_, err := db.Exec("insert into playergroup (groupid, playerid) VALUES (%d, %d);", groupid, playerid)
+	if err != nil {
+		fmt.Fprint(w, err.Error())
+	}
+	fmt.Fprintf(w, "Player entered into group")
+}

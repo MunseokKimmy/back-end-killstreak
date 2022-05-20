@@ -2,10 +2,12 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"practice/groups"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -33,8 +35,8 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Successfully connected to PlanetScale!")
-	http.HandleFunc("/", handler)
-	http.HandleFunc("/groups", groupsHandler)
+	http.HandleFunc("/practice/", handler)
+	http.HandleFunc("/groups/", groupsHandler)
 	fmt.Println("Listening...")
 	fmt.Println(http.ListenAndServe(":8080", nil))
 }
@@ -44,9 +46,29 @@ func groupsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(405), 405)
 		return
 	}
-	groups.GetAllGroups(db, w, r)
+	if strings.HasPrefix(r.URL.Path, "/groups/player") {
+		//GET QUERY PARAM PLAYERID
+		//CALL GROUPS package function
+		fmt.Fprintln(w, "Playerrrrr")
+		groups.GetAllGroupsOfPlayer(db, w, r)
+	} else {
+		groups.GetAllGroups(db, w, r)
+	}
+
+}
+
+type PersonIDRequest struct {
+	id int
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+	var request PersonIDRequest
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	fmt.Fprintf(w, "Person ID: %d", request.id)
 
 }
