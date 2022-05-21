@@ -18,6 +18,14 @@ type CreatePlayerRequest struct {
 }
 
 /*
+	/player/getgroups/
+	Gets all PlayerGroups that player is in.
+*/
+type GetAllGroups struct {
+	PlayerId string `json:"playerid"`
+}
+
+/*
 	/player/changename/
 	Changes a player's name. Must be an editor user? Or account linked to player must match.
 */
