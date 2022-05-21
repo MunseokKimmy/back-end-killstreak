@@ -33,7 +33,7 @@ type GetPlayersStatsRequest struct {
 	Requires editor user.
 */
 type CreateStatsRequest struct {
-	EditorId int `json:"editorid`
+	EditorId int `json:"editorid"`
 	GameId   int `json:"gameid"`
 	PlayerId int `json:"playerid"`
 }
