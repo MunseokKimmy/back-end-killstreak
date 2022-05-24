@@ -34,9 +34,11 @@ type CreateGroupRequest struct {
 	Adds an existing player to the group. Must be an editor user.
 */
 type AddPlayerRequest struct {
-	GroupId  int `json:"groupid"`
-	PlayerId int `json:"playerid"`
-	EditorId int `json:"editorid"`
+	GroupId    int    `json:"groupid"`
+	PlayerId   int    `json:"playerid"`
+	EditorId   int    `json:"editorid"`
+	GroupName  string `json:"groupname"`
+	PlayerName string `json:"playername"`
 }
 
 /*

@@ -22,7 +22,7 @@ type CreatePlayerRequest struct {
 	Gets all PlayerGroups that player is in.
 */
 type GetAllGroups struct {
-	PlayerId string `json:"playerid"`
+	PlayerId int `json:"playerid"`
 }
 
 /*

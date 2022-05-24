@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -37,6 +36,7 @@ func main() {
 	fmt.Println("Successfully connected to PlanetScale!")
 	http.HandleFunc("/practice/", handler)
 	http.HandleFunc("/groups/", groupsHandler)
+	http.HandleFunc("/player/", playerHandler)
 	fmt.Println("Listening...")
 	fmt.Println(http.ListenAndServe(":8080", nil))
 }
@@ -47,28 +47,24 @@ func groupsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if strings.HasPrefix(r.URL.Path, "/groups/player") {
-		//GET QUERY PARAM PLAYERID
-		//CALL GROUPS package function
-		fmt.Fprintln(w, "Playerrrrr")
+		// GET ALL GroupShorts that a player is in. Requires PlayerID.
 		groups.GetAllGroupsOfPlayer(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/groups/get") {
+		// GET Group with GroupID.
+		groups.GetGroup(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/groups/addplayer") {
+		// GET Group with GroupID.
+		groups.AddPlayerToGroup(db, w, r)
 	} else {
+		// GET all groups.
 		groups.GetAllGroups(db, w, r)
 	}
 
 }
 
-type PersonIDRequest struct {
-	id int
+func playerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	var request PersonIDRequest
-
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	fmt.Fprintf(w, "Person ID: %d", request.id)
 
 }

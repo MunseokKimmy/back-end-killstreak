@@ -3,7 +3,7 @@ package dto
 type PlayerGroup struct {
 	PlayerId   int    `json:"playerid"`
 	GroupId    int    `json:"groupid"`
-	Editor     bool   `json:"editor"`
+	Editor     any    `json:"editor"`
 	PlayerName string `json:"playername"`
 	GroupName  string `json:"groupname"`
 }
