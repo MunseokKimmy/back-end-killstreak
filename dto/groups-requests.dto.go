@@ -24,9 +24,9 @@ type GetPlayersInGroup struct {
 	Creates a new group and makes the player creating the group an editor user.
 */
 type CreateGroupRequest struct {
-	Id       int    `json:"groupid"`
-	Name     string `json:"name"`
-	PlayerId int    `json:"playerid"`
+	Name       string `json:"name"`
+	PlayerId   int    `json:"playerid"`
+	PlayerName string `json:"playername"`
 }
 
 /*

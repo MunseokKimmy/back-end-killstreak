@@ -93,7 +93,34 @@ func GetAllGroupsOfPlayer(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	var request dto.CreateGroupRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
+	insert := "INSERT INTO groups (name) VALUES (\"" + request.Name + "\");"
+
+	result, err := db.Exec(insert)
+	if err != nil {
+		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	query := "INSERT INTO playergroup (groupid, playerid, groupname, playername, editor) VALUES (" + strconv.FormatInt(id, 10) + ", " + strconv.Itoa(request.PlayerId) + ", \"" + request.Name + "\", \"" + request.PlayerName + "\", 1);"
+	_, err = db.Exec(query)
+	if err != nil {
+		http.Error(w, http.StatusText(500), 500)
+		http.Error(w, err.Error(), 500)
+		return
+	}
 }
 
 func AddPlayerToGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
@@ -103,12 +130,10 @@ func AddPlayerToGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Fprintf(w, "Request: %v\n", request)
-	editorRights := checkEditorUser(db, request.EditorId, w)
+	editorRights := checkEditorUser(db, request.EditorId, request.GroupId, w)
 	if !editorRights {
 		return
 	}
-	// NEED TO CHECK IF PLAYERGROUP EDITORUSER is true
 	query := "INSERT INTO playergroup (groupid, playerid, groupname, playername, editor) VALUES (" + strconv.Itoa(request.GroupId) + ", " + strconv.Itoa(request.PlayerId) + ", \"" + request.GroupName + "\", \"" + request.PlayerName + "\", 0);"
 
 	_, err = db.Exec(query)
@@ -119,7 +144,22 @@ func AddPlayerToGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 }
 
 func ChangeGroupName(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	var request dto.ChangeNameRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	editorRights := checkEditorUser(db, request.EditorId, request.GroupId, w)
+	if !editorRights {
+		return
+	}
 
+	_, err = db.Exec("UPDATE groups SET name = ? WHERE groupid = ?", request.Name, request.GroupId)
+	if err != nil {
+		fmt.Fprint(w, err.Error())
+	}
+	fmt.Fprintf(w, "Group Name changed to "+request.Name)
 }
 func UpdateLastCompleted(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
@@ -133,19 +173,19 @@ func RemovePlayer(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 func DeleteGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 }
-func checkEditorUser(db *sql.DB, playerid int, w http.ResponseWriter) (editor bool) {
-	fmt.Fprintf(w, "CHECKING PERMISSIONS\n")
-	query := "SELECT * from playergroup where playerid = " + strconv.Itoa(playerid)
+func checkEditorUser(db *sql.DB, playerid int, groupid int, w http.ResponseWriter) (editor bool) {
+	fmt.Fprintf(w, "CHECKING PERMISSIONS for %d\n", playerid)
 	var editorPermission dto.PlayerGroup
-	row := db.QueryRow(query)
-	err := row.Scan(&editorPermission.PlayerId, &editorPermission.PlayerName, &editorPermission.GroupId, &editorPermission.Editor, &editorPermission.GroupName)
-	fmt.Fprintln(w, editorPermission)
+	row := db.QueryRow("SELECT * from playergroup where playerid = ? AND groupid = ?;", playerid, groupid)
+	err := row.Scan(&editorPermission.PlayerId, &editorPermission.PlayerName, &editorPermission.GroupId, &editorPermission.GroupName, &editorPermission.Editor)
+	editorBool := int(editorPermission.Editor[0])
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	if editorPermission.Editor == 1 {
+	if editorBool == 1 {
+		fmt.Fprintf(w, "Rights approved.")
 		return true
 	} else {
 		fmt.Fprintf(w, "User does not have editor rights.")

@@ -42,19 +42,41 @@ func main() {
 }
 
 func groupsHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		http.Error(w, http.StatusText(405), 405)
-		return
-	}
 	if strings.HasPrefix(r.URL.Path, "/groups/player") {
+		if r.Method != "GET" {
+			http.Error(w, http.StatusText(405), 405)
+			return
+		}
 		// GET ALL GroupShorts that a player is in. Requires PlayerID.
 		groups.GetAllGroupsOfPlayer(db, w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/groups/get") {
+		if r.Method != "GET" {
+			http.Error(w, http.StatusText(405), 405)
+			return
+		}
 		// GET Group with GroupID.
 		groups.GetGroup(db, w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/groups/addplayer") {
+		if r.Method != "POST" {
+			http.Error(w, http.StatusText(405), 405)
+			return
+		}
 		// GET Group with GroupID.
 		groups.AddPlayerToGroup(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/groups/create") {
+		if r.Method != "POST" {
+			http.Error(w, http.StatusText(405), 405)
+			return
+		}
+		// POST Group with group name.
+		groups.CreateGroup(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/groups/changename") {
+		if r.Method != "POST" {
+			http.Error(w, http.StatusText(405), 405)
+			return
+		}
+		// POST Group with group name.
+		groups.ChangeGroupName(db, w, r)
 	} else {
 		// GET all groups.
 		groups.GetAllGroups(db, w, r)
