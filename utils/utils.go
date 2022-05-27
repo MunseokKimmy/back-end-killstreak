@@ -14,7 +14,7 @@ func Error405CheckGETMethod(w http.ResponseWriter, r *http.Request) bool {
 }
 
 func Error405CheckPOSTMethod(w http.ResponseWriter, r *http.Request) bool {
-	if r.Method != "GET" {
+	if r.Method != "POST" {
 		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
 		return true
 	}

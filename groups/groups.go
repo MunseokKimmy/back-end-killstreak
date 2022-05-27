@@ -147,16 +147,47 @@ func UpdateLastCompleted(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if utils.Error400Check(err, w) {
 		return
 	}
-	_, err = db.Exec("UPDATE groups SET gamelastcompleted = ?;", request.NewDate)
+	_, err = db.Exec("UPDATE groups SET gamelastcompleted = ? WHERE groupid = ?;", request.NewDate, request.GroupId)
 	if err != nil {
 		fmt.Fprint(w, err.Error())
 	}
-	fmt.Fprintf(w, "Group Name changed to "+request.NewDate.String())
+	fmt.Fprintf(w, "Group Last Completed Date changed to "+request.NewDate.String())
 }
 
 // /groups/giveplayereditor
 func GivePlayerEditor(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	var request dto.GivePlayerEditorRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if utils.Error400Check(err, w) {
+		return
+	}
+	editorRights := checkEditorUser(db, request.CurrentEditorPlayerId, request.GroupId, w)
+	if !editorRights {
+		return
+	}
+	_, err = db.Exec("UPDATE playergroup SET editor = ? WHERE playerid = ? AND groupid = ?;", 1, request.NewEditorPlayerId, request.GroupId)
+	if err != nil {
+		fmt.Fprint(w, err.Error())
+	}
+	fmt.Fprintf(w, "Player %d is now an editor. ", request.NewEditorPlayerId)
+}
 
+// /groups/removeplayereditor
+func RemovePlayerEditor(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	var request dto.GivePlayerEditorRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if utils.Error400Check(err, w) {
+		return
+	}
+	editorRights := checkEditorUser(db, request.CurrentEditorPlayerId, request.GroupId, w)
+	if !editorRights {
+		return
+	}
+	_, err = db.Exec("UPDATE playergroup SET editor = ? WHERE playerid = ? AND groupid = ?;", 0, request.NewEditorPlayerId, request.GroupId)
+	if err != nil {
+		fmt.Fprint(w, err.Error())
+	}
+	fmt.Fprintf(w, "Player %d is no longer an editor. ", request.NewEditorPlayerId)
 }
 
 // /groups/removeplayer

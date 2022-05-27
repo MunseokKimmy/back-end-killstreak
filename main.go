@@ -44,41 +44,53 @@ func main() {
 
 func groupsHandler(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.URL.Path, "/groups/player") {
-		if !utils.Error405CheckGETMethod(w, r) {
+		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
 		// GET ALL GroupShorts that a player is in. Requires PlayerID.
 		groups.GetAllGroupsOfPlayer(db, w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/groups/get") {
-		if !utils.Error405CheckGETMethod(w, r) {
+		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
 		// GET Group with GroupID.
 		groups.GetGroup(db, w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/groups/addplayer") {
-		if !utils.Error405CheckPOSTMethod(w, r) {
+		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
 		// GET Group with GroupID.
 		groups.AddPlayerToGroup(db, w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/groups/create") {
-		if !utils.Error405CheckPOSTMethod(w, r) {
+		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		// POST Group with group name.
+		// POST Create Group
 		groups.CreateGroup(db, w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/groups/changename") {
-		if !utils.Error405CheckPOSTMethod(w, r) {
+		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		// POST Group with group name.
+		// POST Change group name.
 		groups.ChangeGroupName(db, w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/groups/updatelastcompleted") {
-		if !utils.Error405CheckPOSTMethod(w, r) {
+		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		// POST Group with group name.
+		// POST Update last completed game date.
 		groups.UpdateLastCompleted(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/groups/giveplayereditor") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		// POST Give Player Editor
+		groups.GivePlayerEditor(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/groups/removeplayereditor") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		// POST Remove player editor.
+		groups.RemovePlayerEditor(db, w, r)
 	} else {
 		// GET all groups.
 		groups.GetAllGroups(db, w, r)
