@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"killstreak/dto"
 	"net/http"
-	"practice/dto"
 	"strconv"
 )
 
+// /groups/
 func GetAllGroups(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query("SELECT * FROM groups")
 	if err != nil {
@@ -39,12 +40,12 @@ func GetAllGroups(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// /groups/get?groupid=XXXX
 func GetGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	var err error
 	id := r.URL.Query().Get("groupid")
 	var group dto.Group
-	query := "SELECT * FROM groups WHERE groupid = " + id
-	row := db.QueryRow(query)
+	row := db.QueryRow("SELECT * FROM groups WHERE groupid = ?;", id)
 	err = row.Scan(&group.GroupId, &group.Name, &group.DateCreated, &group.GameLastCompleted)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
@@ -54,6 +55,7 @@ func GetGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "\nGroup ID: %d, Name: %s, Date Created: %s, Game Last Completed: %s\n", group.GroupId, group.Name, group.DateCreated.Format("2006-01-02"), group.GameLastCompleted.Format("2006-01-02"))
 }
 
+// /groups/player
 func GetAllGroupsOfPlayer(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	var request dto.GetAllGroups
 	err := json.NewDecoder(r.Body).Decode(&request)
@@ -61,9 +63,8 @@ func GetAllGroupsOfPlayer(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	query := "SELECT groupid, groupname FROM playergroup where playerid = " + strconv.Itoa(request.PlayerId)
 
-	rows, err := db.Query(query)
+	rows, err := db.Query("SELECT groupid, groupname FROM playergroup where playerid = ?;", strconv.Itoa(request.PlayerId))
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		http.Error(w, "12", 500)
@@ -92,6 +93,7 @@ func GetAllGroupsOfPlayer(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// /groups/create
 func CreateGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	var request dto.CreateGroupRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
@@ -100,9 +102,7 @@ func CreateGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	insert := "INSERT INTO groups (name) VALUES (\"" + request.Name + "\");"
-
-	result, err := db.Exec(insert)
+	result, err := db.Exec("INSERT INTO groups (name) VALUES (?);", request.Name)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		http.Error(w, err.Error(), 500)
@@ -114,8 +114,7 @@ func CreateGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	query := "INSERT INTO playergroup (groupid, playerid, groupname, playername, editor) VALUES (" + strconv.FormatInt(id, 10) + ", " + strconv.Itoa(request.PlayerId) + ", \"" + request.Name + "\", \"" + request.PlayerName + "\", 1);"
-	_, err = db.Exec(query)
+	_, err = db.Exec("INSERT INTO playergroup (groupid, playerid, groupname, playername, editor) VALUES (?, ?, ?, ?, ?);", strconv.FormatInt(id, 10), strconv.Itoa(request.PlayerId), request.Name, request.PlayerName, 1)
 	if err != nil {
 		http.Error(w, http.StatusText(500), 500)
 		http.Error(w, err.Error(), 500)
@@ -123,6 +122,7 @@ func CreateGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// /groups/addplayer
 func AddPlayerToGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	var request dto.AddPlayerRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
@@ -134,15 +134,14 @@ func AddPlayerToGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if !editorRights {
 		return
 	}
-	query := "INSERT INTO playergroup (groupid, playerid, groupname, playername, editor) VALUES (" + strconv.Itoa(request.GroupId) + ", " + strconv.Itoa(request.PlayerId) + ", \"" + request.GroupName + "\", \"" + request.PlayerName + "\", 0);"
-
-	_, err = db.Exec(query)
+	_, err = db.Exec("INSERT INTO playergroup (groupid, playerid, groupname, playername, editor) VALUES (?, ?, ?, ?, ?);", strconv.Itoa(request.GroupId), strconv.Itoa(request.PlayerId), request.GroupName, request.PlayerName, 0)
 	if err != nil {
 		fmt.Fprint(w, err.Error())
 	}
 	fmt.Fprintf(w, "Player entered into group")
 }
 
+// /groups/changename
 func ChangeGroupName(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	var request dto.ChangeNameRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
@@ -155,21 +154,29 @@ func ChangeGroupName(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = db.Exec("UPDATE groups SET name = ? WHERE groupid = ?", request.Name, request.GroupId)
+	_, err = db.Exec("UPDATE groups SET name = ? WHERE groupid = ?;", request.Name, request.GroupId)
 	if err != nil {
 		fmt.Fprint(w, err.Error())
 	}
 	fmt.Fprintf(w, "Group Name changed to "+request.Name)
 }
+
+// /groups/updatelastcompleted
 func UpdateLastCompleted(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 }
+
+// /groups/giveplayereditor
 func GivePlayerEditor(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 }
+
+// /groups/removeplayer
 func RemovePlayer(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 }
+
+// /groups/deletegroup
 func DeleteGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 }
