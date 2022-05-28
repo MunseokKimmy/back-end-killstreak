@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"killstreak/groups"
+	"killstreak/players"
 	"killstreak/utils"
 	"net/http"
 	"os"
@@ -37,7 +38,7 @@ func main() {
 	fmt.Println("Successfully connected to PlanetScale!")
 	http.HandleFunc("/practice/", handler)
 	http.HandleFunc("/groups/", groupsHandler)
-	http.HandleFunc("/player/", playerHandler)
+	http.HandleFunc("/players/", playerHandler)
 	fmt.Println("Listening...")
 	fmt.Println(http.ListenAndServe(":8080", nil))
 }
@@ -107,10 +108,32 @@ func groupsHandler(w http.ResponseWriter, r *http.Request) {
 		// GET all groups.
 		groups.GetAllGroups(db, w, r)
 	}
-
 }
 
 func playerHandler(w http.ResponseWriter, r *http.Request) {
+	if strings.HasPrefix(r.URL.Path, "/player/create") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		//
+	} else if strings.HasPrefix(r.URL.Path, "/player/getplayersingroup") {
+		if utils.Error405CheckGETMethod(w, r) {
+			return
+		}
+		players.GetAllPlayersInGroup(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/player/changename") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		//
+	} else if strings.HasPrefix(r.URL.Path, "/player/updatelifetimetotals") {
+		if utils.Error405CheckGETMethod(w, r) {
+			return
+		}
+		//
+	} else {
+
+	}
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {

@@ -13,10 +13,10 @@ type GetGroupRequest struct {
 
 /*
 	/groups/getplayers/
-	Gets all players in a group.
+	Gets all groups a player is in.
 */
-type GetPlayersInGroup struct {
-	Id int `json:"groupid"`
+type GetGroupsOfPlayer struct {
+	PlayerId int `json:"playerid"`
 }
 
 /*

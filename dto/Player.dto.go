@@ -14,3 +14,8 @@ type Player struct {
 	AssistErrors  int
 	BlockErrors   int
 }
+
+type PlayerShort struct {
+	PlayerId int
+	Name     string
+}

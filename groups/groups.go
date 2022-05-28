@@ -51,7 +51,7 @@ func GetGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 // /groups/player
 func GetAllGroupsOfPlayer(db *sql.DB, w http.ResponseWriter, r *http.Request) {
-	var request dto.GetAllGroups
+	var request dto.GetGroupsOfPlayer
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if utils.Error400Check(err, w) {
 		return
@@ -137,7 +137,7 @@ func ChangeGroupName(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprint(w, err.Error())
 	}
-	_, err = db.Exec("UPDATE playergroup SET groupname = ? WHERE groupid = ?;", request.Name, request.GroupId)
+	_, err = db.Exec("UPDATE playergroup SET name = ? WHERE groupid = ?;", request.Name, request.GroupId)
 	if err != nil {
 		fmt.Fprint(w, err.Error())
 	}
