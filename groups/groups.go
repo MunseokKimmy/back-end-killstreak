@@ -137,6 +137,10 @@ func ChangeGroupName(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprint(w, err.Error())
 	}
+	_, err = db.Exec("UPDATE playergroup SET groupname = ? WHERE groupid = ?;", request.Name, request.GroupId)
+	if err != nil {
+		fmt.Fprint(w, err.Error())
+	}
 	fmt.Fprintf(w, "Group Name changed to "+request.Name)
 }
 
@@ -192,13 +196,47 @@ func RemovePlayerEditor(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 // /groups/removeplayer
 func RemovePlayer(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	var request dto.RemovePlayerRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if utils.Error400Check(err, w) {
+		return
+	}
+	editorRights := checkEditorUser(db, request.EditorId, request.GroupId, w)
+	if !editorRights {
+		return
+	}
 
+	_, err = db.Exec("DELETE from playergroup WHERE playerid = ? AND groupid = ?;", request.PlayerToBeRemovedId, request.GroupId)
+	if err != nil {
+		fmt.Fprint(w, err.Error())
+	}
+	fmt.Fprintf(w, "Player %d is no longer in Group %d by Player %d. ", request.PlayerToBeRemovedId, request.GroupId, request.EditorId)
 }
 
 // /groups/deletegroup
 func DeleteGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	var request dto.DeleteGroupRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if utils.Error400Check(err, w) {
+		return
+	}
+	editorRights := checkEditorUser(db, request.EditorId, request.GroupId, w)
+	if !editorRights {
+		return
+	}
+
+	_, err = db.Exec("DELETE from groups WHERE groupid = ?;", request.GroupId)
+	if err != nil {
+		fmt.Fprint(w, err.Error())
+	}
+	_, err = db.Exec("DELETE from playergroup WHERE groupid = ?;", request.GroupId)
+	if err != nil {
+		fmt.Fprint(w, err.Error())
+	}
+	fmt.Fprintf(w, "Group #%d is deleted by Player #%d.  ", request.GroupId, request.EditorId)
 
 }
+
 func checkEditorUser(db *sql.DB, playerid int, groupid int, w http.ResponseWriter) (editor bool) {
 	fmt.Fprintf(w, "CHECKING PERMISSIONS for %d\n", playerid)
 	var editorPermission dto.PlayerGroup

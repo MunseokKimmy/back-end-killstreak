@@ -91,6 +91,18 @@ func groupsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		// POST Remove player editor.
 		groups.RemovePlayerEditor(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/groups/removeplayer") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		// POST Remove player from group.
+		groups.RemovePlayer(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/groups/deletegroup") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		// POST Delete Group.
+		groups.DeleteGroup(db, w, r)
 	} else {
 		// GET all groups.
 		groups.GetAllGroups(db, w, r)
