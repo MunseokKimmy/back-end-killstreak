@@ -9,6 +9,10 @@ type GetGameRequest struct {
 	GameId int `json:"gameid"`
 }
 
+type GetAllGamesOfPlayer struct {
+	PlayerId int `json:"playerid"`
+}
+
 /*
 	/game/creategame/
 	Creates a new game, giving it a name and both teams names. Needs a group?

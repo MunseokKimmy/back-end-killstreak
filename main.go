@@ -147,6 +147,16 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func gameHandler(w http.ResponseWriter, r *http.Request) {
+	// if strings.HasPrefix(r.URL.Path, "/game/") {
+	// 	if utils.Error405CheckGETMethod(w, r) {
+	// 		return
+	// 	}
+	// 	// GET ALL GroupShorts that a player is in. Requires PlayerID.
+	// 	groups.GetAllGroupsOfPlayer(db, w, r)
+	// }
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
 
 }
