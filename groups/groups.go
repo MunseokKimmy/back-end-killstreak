@@ -110,7 +110,7 @@ func AddPlayerToGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if utils.Error400Check(err, w) {
 		return
 	}
-	editorRights := checkEditorUser(db, request.EditorId, request.GroupId, w)
+	editorRights := CheckEditorUser(db, request.EditorId, request.GroupId, w)
 	if !editorRights {
 		return
 	}
@@ -128,7 +128,7 @@ func ChangeGroupName(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if utils.Error400Check(err, w) {
 		return
 	}
-	editorRights := checkEditorUser(db, request.EditorId, request.GroupId, w)
+	editorRights := CheckEditorUser(db, request.EditorId, request.GroupId, w)
 	if !editorRights {
 		return
 	}
@@ -165,7 +165,7 @@ func GivePlayerEditor(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if utils.Error400Check(err, w) {
 		return
 	}
-	editorRights := checkEditorUser(db, request.CurrentEditorPlayerId, request.GroupId, w)
+	editorRights := CheckEditorUser(db, request.CurrentEditorPlayerId, request.GroupId, w)
 	if !editorRights {
 		return
 	}
@@ -183,7 +183,7 @@ func RemovePlayerEditor(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if utils.Error400Check(err, w) {
 		return
 	}
-	editorRights := checkEditorUser(db, request.CurrentEditorPlayerId, request.GroupId, w)
+	editorRights := CheckEditorUser(db, request.CurrentEditorPlayerId, request.GroupId, w)
 	if !editorRights {
 		return
 	}
@@ -201,7 +201,7 @@ func RemovePlayer(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if utils.Error400Check(err, w) {
 		return
 	}
-	editorRights := checkEditorUser(db, request.EditorId, request.GroupId, w)
+	editorRights := CheckEditorUser(db, request.EditorId, request.GroupId, w)
 	if !editorRights {
 		return
 	}
@@ -220,7 +220,7 @@ func DeleteGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if utils.Error400Check(err, w) {
 		return
 	}
-	editorRights := checkEditorUser(db, request.EditorId, request.GroupId, w)
+	editorRights := CheckEditorUser(db, request.EditorId, request.GroupId, w)
 	if !editorRights {
 		return
 	}
@@ -237,7 +237,7 @@ func DeleteGroup(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 }
 
-func checkEditorUser(db *sql.DB, playerid int, groupid int, w http.ResponseWriter) (editor bool) {
+func CheckEditorUser(db *sql.DB, playerid int, groupid int, w http.ResponseWriter) (editor bool) {
 	fmt.Fprintf(w, "CHECKING PERMISSIONS for %d\n", playerid)
 	var editorPermission dto.PlayerGroup
 	row := db.QueryRow("SELECT * from playergroup where playerid = ? AND groupid = ?;", playerid, groupid)

@@ -38,7 +38,7 @@ func main() {
 	fmt.Println("Successfully connected to PlanetScale!")
 	http.HandleFunc("/practice/", handler)
 	http.HandleFunc("/groups/", groupsHandler)
-	http.HandleFunc("/players/", playerHandler)
+	http.HandleFunc("/player/", playerHandler)
 	fmt.Println("Listening...")
 	fmt.Println(http.ListenAndServe(":8080", nil))
 }
@@ -115,24 +115,35 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		//
-	} else if strings.HasPrefix(r.URL.Path, "/player/getplayersingroup") {
-		if utils.Error405CheckGETMethod(w, r) {
-			return
-		}
-		players.GetAllPlayersInGroup(db, w, r)
+		// POST Create Player.
+		players.CreatePlayer(db, w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/player/changename") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		//
+		// POST Change player name.
+		players.ChangePlayerName(db, w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/player/updatelifetimetotals") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		//POST Update Player's Lifetime totals.
+		players.UpdatePlayerLifetimeTotals(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/player/getplayersingroup") {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
-		//
+		// GET Get all players in a group.
+		players.GetAllPlayersInGroup(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/player/get") {
+		if utils.Error405CheckGETMethod(w, r) {
+			return
+		}
+		// GET Get one player.
+		players.GetPlayer(db, w, r)
 	} else {
-
+		//GET Get all players.
+		players.GetAllPlayers(db, w, r)
 	}
 }
 

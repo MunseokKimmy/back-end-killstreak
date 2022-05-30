@@ -30,9 +30,12 @@ type GetAllPlayersInGroupRequest struct {
 	Changes a player's name. Must be an editor user? Or account linked to player must match.
 */
 type ChangePlayerNameRequest struct {
-	Playerid  int    `json:"playerid"`
+	PlayerId  int    `json:"playerid"`
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
+	AccountId int    `json:"accountid,omitempty"`
+	GroupId   int    `json:"groupid,omitempty"`
+	EditorId  int    `json:"editorid,omitempty"`
 }
 
 /*

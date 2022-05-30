@@ -13,6 +13,7 @@ type Player struct {
 	ServiceErrors int
 	AssistErrors  int
 	BlockErrors   int
+	AccountId     any
 }
 
 type PlayerShort struct {
