@@ -11,6 +11,7 @@ type Game struct {
 	TeamTwoName    string
 	TeamOneScore   int
 	TeamTwoScore   int
-	TeamOneServing bool
+	TeamOneServing []uint8
 	LastUpdated    time.Time
+	Completed      []uint8
 }

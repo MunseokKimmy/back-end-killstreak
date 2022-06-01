@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"killstreak/games"
 	"killstreak/groups"
 	"killstreak/players"
 	"killstreak/utils"
@@ -39,6 +40,7 @@ func main() {
 	http.HandleFunc("/practice/", handler)
 	http.HandleFunc("/groups/", groupsHandler)
 	http.HandleFunc("/player/", playerHandler)
+	http.HandleFunc("/game/", gameHandler)
 	fmt.Println("Listening...")
 	fmt.Println(http.ListenAndServe(":8080", nil))
 }
@@ -148,13 +150,67 @@ func playerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
-	// if strings.HasPrefix(r.URL.Path, "/game/") {
-	// 	if utils.Error405CheckGETMethod(w, r) {
-	// 		return
-	// 	}
-	// 	// GET ALL GroupShorts that a player is in. Requires PlayerID.
-	// 	groups.GetAllGroupsOfPlayer(db, w, r)
-	// }
+	if strings.HasPrefix(r.URL.Path, "/game/get") {
+		if utils.Error405CheckGETMethod(w, r) {
+			return
+		}
+		games.GetGame(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/game/players") {
+		if utils.Error405CheckGETMethod(w, r) {
+			return
+		}
+		games.GetPlayersInGame(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/game/playergames") {
+		if utils.Error405CheckGETMethod(w, r) {
+			return
+		}
+		games.GetGamesForPlayer(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/game/create") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		games.CreateGame(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/game/changename") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		games.ChangeName(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/game/teamonescore") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		games.UpdateTeamOneScore(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/game/teamtwoscore") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		games.UpdateTeamTwoScore(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/game/completegame") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		games.CompleteGame(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/game/uncompletegame") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		games.UncompleteGame(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/game/switchserver") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		games.SwitchServer(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/game/update") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		games.UpdateGame(db, w, r)
+	} else {
+		if utils.Error405CheckGETMethod(w, r) {
+			return
+		}
+		games.GetAllGames(db, w, r)
+	}
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {

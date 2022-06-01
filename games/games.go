@@ -20,7 +20,7 @@ func GetGame(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	row := db.QueryRow("SELECT * FROM game where gameid = ?;", strconv.Itoa(request.GameId))
 	game := new(dto.Game)
-	err = row.Scan(&game.GameId, &game.GroupId, &game.Name, &game.Date, &game.TeamOneName, &game.TeamTwoName, &game.TeamOneScore, &game.TeamTwoScore, &game.TeamOneServing, &game.LastUpdated)
+	err = row.Scan(&game.GameId, &game.GroupId, &game.Name, &game.Date, &game.TeamOneName, &game.TeamTwoName, &game.TeamOneScore, &game.TeamTwoScore, &game.TeamOneServing, &game.LastUpdated, &game.Completed)
 	if utils.Error500Check(err, w) {
 		return
 	}
@@ -42,7 +42,7 @@ func GetAllGames(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	games := make([]*dto.Game, 0)
 	for rows.Next() {
 		game := new(dto.Game)
-		err := rows.Scan(&game.GameId, &game.GroupId, &game.Name, &game.Date, &game.TeamOneName, &game.TeamTwoName, &game.TeamOneScore, &game.TeamTwoScore, &game.TeamOneServing, &game.LastUpdated)
+		err := rows.Scan(&game.GameId, &game.GroupId, &game.Name, &game.Date, &game.TeamOneName, &game.TeamTwoName, &game.TeamOneScore, &game.TeamTwoScore, &game.TeamOneServing, &game.LastUpdated, &game.Completed)
 		if utils.Error500Check(err, w) {
 			return
 		}
