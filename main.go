@@ -170,6 +170,11 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		games.CreateGame(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/game/addplayer") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		games.AddPlayer(db, w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/game/changename") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return

@@ -15,3 +15,8 @@ type Game struct {
 	LastUpdated    time.Time
 	Completed      []uint8
 }
+
+type GameShort struct {
+	GameId   int
+	GameName string
+}
