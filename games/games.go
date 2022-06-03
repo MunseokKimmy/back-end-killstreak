@@ -184,6 +184,10 @@ func ChangeName(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if utils.Error500Check(err, w) {
 		return
 	}
+	_, err = db.Exec("UPDATE playerstatistics SET gamename = ? where gameid = ?", request.NewName, request.GameId)
+	if utils.Error500Check(err, w) {
+		return
+	}
 	fmt.Fprintf(w, "Name Changed to %s \n", request.NewName)
 }
 

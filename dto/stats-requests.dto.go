@@ -58,17 +58,6 @@ type UpdateStatsRequest struct {
 }
 
 /*
-	/stats/removeplayer/
-	Removes a player from a game, editor user required.
-*/
-type RemovePlayerStatsRequest struct {
-	PlayerId int `json:"playerid"`
-	EditorId int `json:"editorid"`
-	GameId   int `json:"gameid"`
-	StatId   int `json:"statid,omitempty"`
-}
-
-/*
 	/stats/highlights/
 	Gets all group stats and adds them together.
 */

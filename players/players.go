@@ -109,7 +109,18 @@ func ChangePlayerName(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	if request.AccountId == 0 {
 		if groups.CheckEditorUser(db, request.EditorId, request.GroupId, w) {
+			fullName := request.FirstName + " " + request.LastName
 			_, err := db.Exec("UPDATE player SET firstname = ?, lastname = ? WHERE playerid = ?", request.FirstName, request.LastName, request.PlayerId)
+			if err != nil {
+				fmt.Fprint(w, err.Error())
+				return
+			}
+			_, err = db.Exec("UPDATE playerstatistics SET playername = ? WHERE playerid = ?", fullName, request.PlayerId)
+			if err != nil {
+				fmt.Fprint(w, err.Error())
+				return
+			}
+			_, err = db.Exec("UPDATE playergroup SET playername = ? WHERE playerid = ?", fullName, request.PlayerId)
 			if err != nil {
 				fmt.Fprint(w, err.Error())
 				return

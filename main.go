@@ -6,6 +6,7 @@ import (
 	"killstreak/games"
 	"killstreak/groups"
 	"killstreak/players"
+	"killstreak/stats"
 	"killstreak/utils"
 	"net/http"
 	"os"
@@ -41,6 +42,7 @@ func main() {
 	http.HandleFunc("/groups/", groupsHandler)
 	http.HandleFunc("/player/", playerHandler)
 	http.HandleFunc("/game/", gameHandler)
+	http.HandleFunc("/stats/", statsHandler)
 	fmt.Println("Listening...")
 	fmt.Println(http.ListenAndServe(":8080", nil))
 }
@@ -215,6 +217,45 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		games.GetAllGames(db, w, r)
+	}
+}
+
+func statsHandler(w http.ResponseWriter, r *http.Request) {
+	if strings.HasPrefix(r.URL.Path, "/stats/getgamestats") {
+		if utils.Error405CheckGETMethod(w, r) {
+			return
+		}
+		stats.GetGameStats(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/stats/getplayerstatsingame") {
+		if utils.Error405CheckGETMethod(w, r) {
+			return
+		}
+		stats.GetPlayersStatsInGame(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/stats/getplayerstats") {
+		if utils.Error405CheckGETMethod(w, r) {
+			return
+		}
+		stats.GetPlayersStats(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/stats/create") {
+		if utils.Error405CheckGETMethod(w, r) {
+			return
+		}
+		stats.CreateStats(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/stats/update") {
+		if utils.Error405CheckGETMethod(w, r) {
+			return
+		}
+		stats.UpdateStats(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/stats/highlights") {
+		if utils.Error405CheckGETMethod(w, r) {
+			return
+		}
+		stats.Highlights(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/stats/allgroupstats") {
+		if utils.Error405CheckGETMethod(w, r) {
+			return
+		}
+		stats.AllGroupStats(db, w, r)
 	}
 }
 
