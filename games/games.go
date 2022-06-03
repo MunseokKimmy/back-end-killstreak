@@ -274,6 +274,11 @@ func UncompleteGame(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if !groups.CheckEditorUser(db, request.EditorId, request.GroupId, w) {
 		return
 	}
+	_, err = db.Exec("UPDATE game SET completed = 0 where gameid = ?", request.GameId)
+	if utils.Error500Check(err, w) {
+		return
+	}
+	fmt.Fprintf(w, "Game %d has been set to incomplete.", request.GameId)
 }
 
 // /games/switchserver
@@ -287,6 +292,20 @@ func SwitchServer(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if !groups.CheckEditorUser(db, request.EditorId, request.GroupId, w) {
 		return
 	}
+	if !CheckIfGameIsOpen(db, w, request.GameId) {
+		return
+	}
+	if !request.TeamOneServing {
+		_, err = db.Exec("UPDATE game SET teamoneserving = 0 where gameid = ?", request.GameId)
+		fmt.Fprintf(w, "Team 1 is now serving.")
+	} else {
+		_, err = db.Exec("UPDATE game SET teamoneserving = 1 where gameid = ?", request.GameId)
+		fmt.Fprintf(w, "Team 2 is now serving.")
+	}
+	if utils.Error500Check(err, w) {
+		return
+	}
+
 }
 
 // /games/update
@@ -300,6 +319,14 @@ func UpdateGame(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 	if !groups.CheckEditorUser(db, request.EditorId, request.GroupId, w) {
 		return
 	}
+	if !CheckIfGameIsOpen(db, w, request.GameId) {
+		return
+	}
+	_, err = db.Exec("UPDATE game SET name = ?, teamonename = ?, teamtwoname = ?, teamonescore = ?, teamtwoscore = ?, teamoneserving = ?, groupid = ?  where gameid = ?", request.Name, request.TeamOneName, request.TeamTwoName, request.TeamOneScore, request.TeamTwoScore, request.TeamOneServing, request.GroupId, request.GameId)
+	if utils.Error500Check(err, w) {
+		return
+	}
+	fmt.Fprintf(w, "Game Updated")
 }
 
 func CheckIfGameIsOpen(db *sql.DB, w http.ResponseWriter, gameid int) bool {

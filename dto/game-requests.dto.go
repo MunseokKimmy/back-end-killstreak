@@ -1,7 +1,5 @@
 package dto
 
-import "time"
-
 /*
 
  */
@@ -131,14 +129,13 @@ type GameSwitchServer struct {
 	Updates the entire Game row. Requires editor user.
 */
 type UpdateGameRequest struct {
-	GameId         int       `json:"gameid"`
-	EditorId       int       `json:"editorid"`
-	Name           string    `json:"name"`
-	Date           time.Time `json:"date"`
-	TeamOneName    string    `json:"teamonename"`
-	TeamTwoName    string    `json:"teamtwoname"`
-	TeamOneScore   int       `json:"teamonescore"`
-	TeamTwoScore   int       `json:"teamtwoscore"`
-	TeamOneServing bool      `json:"teamoneserving"`
-	GroupId        int       `json:"groupid"`
+	GameId         int    `json:"gameid"`
+	EditorId       int    `json:"editorid"`
+	Name           string `json:"name"`
+	TeamOneName    string `json:"teamonename"`
+	TeamTwoName    string `json:"teamtwoname"`
+	TeamOneScore   int    `json:"teamonescore"`
+	TeamTwoScore   int    `json:"teamtwoscore"`
+	TeamOneServing bool   `json:"teamoneserving"`
+	GroupId        int    `json:"groupid"`
 }
