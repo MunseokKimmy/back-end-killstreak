@@ -49,175 +49,289 @@ func main() {
 }
 
 func groupsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if strings.HasPrefix(r.URL.Path, "/groups/player") {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
 		// GET ALL GroupShorts that a player is in. Requires PlayerID.
-		groups.GetAllGroupsOfPlayer(db, w, r)
+		groups, err := groups.GetAllGroupsOfPlayer(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(groups)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/groups/get") {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
 		// GET Group with GroupID.
-		groups.GetGroup(db, w, r)
+		group, err := groups.GetGroup(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(group)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/groups/addplayer") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
 		// GET Group with GroupID.
-		groups.AddPlayerToGroup(db, w, r)
+		err := groups.AddPlayerToGroup(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/groups/create") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
 		// POST Create Group
-		groups.CreateGroup(db, w, r)
+		err := groups.CreateGroup(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/groups/changename") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
 		// POST Change group name.
-		groups.ChangeGroupName(db, w, r)
+		err := groups.ChangeGroupName(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/groups/updatelastcompleted") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
 		// POST Update last completed game date.
-		groups.UpdateLastCompleted(db, w, r)
+		err := groups.UpdateLastCompleted(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/groups/giveplayereditor") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
 		// POST Give Player Editor
-		groups.GivePlayerEditor(db, w, r)
+		err := groups.GivePlayerEditor(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/groups/removeplayereditor") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
 		// POST Remove player editor.
-		groups.RemovePlayerEditor(db, w, r)
+		err := groups.RemovePlayerEditor(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/groups/removeplayer") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
 		// POST Remove player from group.
-		groups.RemovePlayer(db, w, r)
+		err := groups.RemovePlayer(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/groups/deletegroup") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
 		// POST Delete Group.
-		groups.DeleteGroup(db, w, r)
+		err := groups.DeleteGroup(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else {
 		// GET all groups.
-		groups.GetAllGroups(db, w, r)
+		groups, err := groups.GetAllGroups(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(groups)
+		}
 	}
 }
 
 func playerHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	if strings.HasPrefix(r.URL.Path, "/player/create") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
 		// POST Create Player.
-		players.CreatePlayer(db, w, r)
+		err := players.CreatePlayer(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/player/changename") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
 		// POST Change player name.
-		players.ChangePlayerName(db, w, r)
+		err := players.ChangePlayerName(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/player/updatelifetimetotals") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
 		//POST Update Player's Lifetime totals.
-		players.UpdatePlayerLifetimeTotals(db, w, r)
+		err := players.UpdatePlayerLifetimeTotals(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/player/getplayersingroup") {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
 		// GET Get all players in a group.
-		players.GetAllPlayersInGroup(db, w, r)
+		players, err := players.GetAllPlayersInGroup(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(players)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/player/get") {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
 		// GET Get one player.
-		players.GetPlayer(db, w, r)
+		player, err := players.GetPlayer(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(player)
+		}
 	} else {
 		//GET Get all players.
-		players.GetAllPlayers(db, w, r)
+		players, err := players.GetAllPlayers(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(players)
+		}
 	}
 }
 
 func gameHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if strings.HasPrefix(r.URL.Path, "/game/get") {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
-		games.GetGame(db, w, r)
+		game, err := games.GetGame(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(game)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/game/players") {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
-		games.GetPlayersInGame(db, w, r)
+		players, err := games.GetPlayersInGame(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(players)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/game/playergames") {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
-		games.GetGamesForPlayer(db, w, r)
+		games, err := games.GetGamesForPlayer(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(games)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/game/create") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		games.CreateGame(db, w, r)
+		err := games.CreateGame(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/game/addplayer") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		games.AddPlayer(db, w, r)
+		err := games.AddPlayer(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/game/changename") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		games.ChangeName(db, w, r)
+		err := games.ChangeName(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/game/teamonescore") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		games.UpdateTeamOneScore(db, w, r)
+		err := games.UpdateTeamOneScore(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/game/teamtwoscore") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		games.UpdateTeamTwoScore(db, w, r)
+		err := games.UpdateTeamTwoScore(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/game/completegame") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		games.CompleteGame(db, w, r)
+		err := games.CompleteGame(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/game/uncompletegame") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		games.UncompleteGame(db, w, r)
+		err := games.UncompleteGame(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/game/switchserver") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		games.SwitchServer(db, w, r)
+		err := games.SwitchServer(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/game/update") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		games.UpdateGame(db, w, r)
+		err := games.UpdateGame(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
-		games.GetAllGames(db, w, r)
+		games, err := games.GetAllGames(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(games)
+		}
 	}
 }
 
