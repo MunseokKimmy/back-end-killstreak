@@ -13,7 +13,7 @@ type StatBlock struct {
 	Digs          int
 	Blocks        int
 	BlockErrors   int
-	OnTeamOne     []uint8
+	Team          int
 	PlayerName    string
 	GameName      string
 }

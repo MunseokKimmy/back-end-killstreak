@@ -222,11 +222,11 @@ func gameHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func statsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if strings.HasPrefix(r.URL.Path, "/stats/getgamestats") {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
 		stats, err := stats.GetGameStats(db, w, r)
 		if err != nil {
 			json.NewEncoder(w).Encode(err)
@@ -237,22 +237,38 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
-		stats.GetPlayersStatsInGame(db, w, r)
+		stats, err := stats.GetPlayersStatsInGame(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(stats)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/stats/getplayerstats") {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
-		stats.GetPlayersStats(db, w, r)
+		stats, err := stats.GetPlayersStats(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(stats)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/stats/setteam") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		stats.SetPlayerTeam(db, w, r)
+		err := stats.SetPlayerTeam(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/stats/update") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
-		stats.UpdateStats(db, w, r)
+		err := stats.UpdateStats(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/stats/highlights") {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
@@ -262,7 +278,12 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
-		stats.AllGroupStats(db, w, r)
+		stats, err := stats.AllGroupStats(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(stats)
+		}
 	}
 }
 

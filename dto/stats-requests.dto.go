@@ -26,11 +26,11 @@ type GetPlayersStatsRequest struct {
 }
 
 type SetPlayerTeamRequest struct {
-	PlayerId  int `json:"playerid"`
-	EditorId  int `json:"editorid"`
-	GameId    int `json:"gameid"`
-	GroupId   int `json:"groupid"`
-	OnTeamOne int `json:"onteamone"`
+	PlayerId int `json:"playerid"`
+	EditorId int `json:"editorid"`
+	GameId   int `json:"gameid"`
+	GroupId  int `json:"groupid"`
+	Team     int `json:"team"`
 }
 
 /*
