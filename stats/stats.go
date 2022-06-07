@@ -13,15 +13,15 @@ import (
 )
 
 // /stats/getgamestats/
-func GetGameStats(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+func GetGameStats(db *sql.DB, w http.ResponseWriter, r *http.Request) ([]*dto.StatBlock, error) {
 	var request dto.GetGameStatsRequest
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if utils.Error400Check(err, w) {
-		return
+		return nil, err
 	}
 	rows, err := db.Query("SELECT * from playerstatistics WHERE gameid = ?", request.GameId)
 	if utils.Error500Check(err, w) {
-		return
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -30,17 +30,18 @@ func GetGameStats(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		block := new(dto.StatBlock)
 		err := rows.Scan(&block.StatId, &block.GameId, &block.PlayerId, &block.Kills, &block.AtkErrors, &block.ServiceAces, &block.ServiceErrors, &block.Assists, &block.AssistErrors, &block.Digs, &block.Blocks, &block.BlockErrors, &block.OnTeamOne, &block.PlayerName, &block.GameName)
 		if utils.Error500Check(err, w) {
-			return
+			return nil, err
 		}
 		gameStats = append(gameStats, block)
 	}
 	if utils.Error500Check(err, w) {
-		return
+		return nil, err
 	}
-	for _, block := range gameStats {
-		fmt.Fprintf(w, "Stat ID: %d \n Game ID: %d %s \n Player: %d - %s\n Kills: %d\n AtkErrors: %d\n Aces: %d\n ServiceErrors: %d\n Assists: %d\n AssistErrors: %d\n Digs: %d\n, Blocks: %d\n, Block Errors: %d\n On Team One: %d\n",
-			block.StatId, block.GameId, block.GameName, block.PlayerId, block.PlayerName, block.Kills, block.AtkErrors, block.ServiceAces, block.ServiceErrors, block.Assists, block.AssistErrors, block.Digs, block.Blocks, block.BlockErrors, int(block.OnTeamOne[0]))
-	}
+	// for _, block := range gameStats {
+	// 	fmt.Fprintf(w, "Stat ID: %d \n Game ID: %d %s \n Player: %d - %s\n Kills: %d\n AtkErrors: %d\n Aces: %d\n ServiceErrors: %d\n Assists: %d\n AssistErrors: %d\n Digs: %d\n, Blocks: %d\n, Block Errors: %d\n On Team One: %d\n",
+	// 		block.StatId, block.GameId, block.GameName, block.PlayerId, block.PlayerName, block.Kills, block.AtkErrors, block.ServiceAces, block.ServiceErrors, block.Assists, block.AssistErrors, block.Digs, block.Blocks, block.BlockErrors, int(block.OnTeamOne[0]))
+	// }
+	return gameStats, nil
 }
 
 /*
@@ -99,6 +100,29 @@ func GetPlayersStats(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Stat ID: %d \n Game ID: %d %s \n Player: %d - %s\n Kills: %d\n AtkErrors: %d\n Aces: %d\n ServiceErrors: %d\n Assists: %d\n AssistErrors: %d\n Digs: %d\n, Blocks: %d\n, Block Errors: %d\n On Team One: %d\n",
 			block.StatId, block.GameId, block.GameName, block.PlayerId, block.PlayerName, block.Kills, block.AtkErrors, block.ServiceAces, block.ServiceErrors, block.Assists, block.AssistErrors, block.Digs, block.Blocks, block.BlockErrors, int(block.OnTeamOne[0]))
 	}
+}
+
+/*
+	/stats/switchplayerteam/
+	Sets a player's team. Requires editor user.
+*/
+func SetPlayerTeam(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	var request dto.SetPlayerTeamRequest
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if utils.Error400Check(err, w) {
+		return
+	}
+	if !groups.CheckEditorUser(db, request.EditorId, request.GroupId, w) {
+		return
+	}
+	if !games.CheckIfGameIsOpen(db, w, request.GameId) {
+		return
+	}
+	_, err = db.Exec("UPDATE playerstatistics SET onteamone = ? WHERE playerid = ? AND gameid = ?;", request.OnTeamOne, request.PlayerId, request.GameId)
+	if utils.Error500Check(err, w) {
+		return
+	}
+	fmt.Fprintf(w, "Team Updated \n")
 }
 
 /*

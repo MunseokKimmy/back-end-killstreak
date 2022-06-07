@@ -28,13 +28,13 @@ type CreateGameRequest struct {
 	TeamOneName string `json:"teamonename"`
 	TeamTwoName string `json:"teamtwoname"`
 	Players     []int  `json:"playerids,omitempty"`
-	EditorTeam  int    `json:"editorteam"` //2 - not in game, 1 - team 1, 0 - team 2
+	EditorTeam  int    `json:"editorteam"`
 }
 
 const (
-	EditorTeamOne    int = 0
-	EditorTeamTwo    int = 1
-	EditorNotPlaying int = 2
+	EditorNotPlaying int = 0
+	EditorTeamOne    int = 1
+	EditorTeamTwo    int = 2
 )
 
 /*

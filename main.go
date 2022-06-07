@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"killstreak/games"
 	"killstreak/groups"
@@ -225,7 +226,13 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
 		}
-		stats.GetGameStats(db, w, r)
+		w.Header().Set("Content-Type", "application/json")
+		stats, err := stats.GetGameStats(db, w, r)
+		if err != nil {
+			json.NewEncoder(w).Encode(err)
+		} else {
+			json.NewEncoder(w).Encode(stats)
+		}
 	} else if strings.HasPrefix(r.URL.Path, "/stats/getplayerstatsingame") {
 		if utils.Error405CheckGETMethod(w, r) {
 			return
@@ -236,6 +243,11 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		stats.GetPlayersStats(db, w, r)
+	} else if strings.HasPrefix(r.URL.Path, "/stats/setteam") {
+		if utils.Error405CheckPOSTMethod(w, r) {
+			return
+		}
+		stats.SetPlayerTeam(db, w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/stats/update") {
 		if utils.Error405CheckPOSTMethod(w, r) {
 			return

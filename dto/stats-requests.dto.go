@@ -25,6 +25,14 @@ type GetPlayersStatsRequest struct {
 	PlayerId int `json:"playerid"`
 }
 
+type SetPlayerTeamRequest struct {
+	PlayerId  int `json:"playerid"`
+	EditorId  int `json:"editorid"`
+	GameId    int `json:"gameid"`
+	GroupId   int `json:"groupid"`
+	OnTeamOne int `json:"onteamone"`
+}
+
 /*
 	/stats/create/
 	Creates a new set of stats. Used when a game is created with a player in it.
