@@ -236,13 +236,8 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		stats.GetPlayersStats(db, w, r)
-	} else if strings.HasPrefix(r.URL.Path, "/stats/create") {
-		if utils.Error405CheckGETMethod(w, r) {
-			return
-		}
-		stats.CreateStats(db, w, r)
 	} else if strings.HasPrefix(r.URL.Path, "/stats/update") {
-		if utils.Error405CheckGETMethod(w, r) {
+		if utils.Error405CheckPOSTMethod(w, r) {
 			return
 		}
 		stats.UpdateStats(db, w, r)

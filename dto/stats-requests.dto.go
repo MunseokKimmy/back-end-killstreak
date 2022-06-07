@@ -1,7 +1,5 @@
 package dto
 
-import "time"
-
 /*
 	/stats/getgamestats/
 	Gets all stats for a game.
@@ -33,9 +31,12 @@ type GetPlayersStatsRequest struct {
 	Requires editor user.
 */
 type CreateStatsRequest struct {
-	EditorId int `json:"editorid"`
-	GameId   int `json:"gameid"`
-	PlayerId int `json:"playerid"`
+	EditorId   int    `json:"editorid"`
+	GameId     int    `json:"gameid"`
+	PlayerId   int    `json:"playerid"`
+	GroupId    int    `json:"groupid"`
+	GameName   string `json:"gamename"`
+	PlayerName string `json:"playername"`
 }
 
 /*
@@ -45,7 +46,9 @@ type CreateStatsRequest struct {
 */
 type UpdateStatsRequest struct {
 	EditorId      int `json:"editorid"`
-	StatsId       int `json:"statsid"`
+	GameId        int `json:"gameid"`
+	PlayerId      int `json:"playerid"`
+	GroupId       int `json:"groupid"`
 	Kills         int `json:"kills"`
 	AtkErrors     int `json:"atkerrors"`
 	ServiceAces   int `json:"serviceaces"`
@@ -62,8 +65,8 @@ type UpdateStatsRequest struct {
 	Gets all group stats and adds them together.
 */
 type HighlightsRequest struct {
-	GroupId int       `json:"groupid"`
-	Date    time.Time `json:"date"`
+	GroupId int    `json:"groupid"`
+	Date    string `json:"date"`
 }
 
 /*
@@ -71,6 +74,6 @@ type HighlightsRequest struct {
 	Gets Group Stats On a certain day.
 */
 type AllGroupStatsOnDayRequest struct {
-	GroupId int       `json:"groupid"`
-	Date    time.Time `json:"date"`
+	GroupId int    `json:"groupid"`
+	Date    string `json:"date"`
 }
